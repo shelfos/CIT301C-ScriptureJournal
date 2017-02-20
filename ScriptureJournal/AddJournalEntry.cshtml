@@ -1,0 +1,96 @@
+﻿@{ 
+    Validation.RequireField("scriptureReference", "You must enter a scripture reference");
+    Validation.RequireField("notes", "You must enter some notes for this scripture");
+
+    var scriptureReference = "";
+    var notes = "";
+
+    if (IsPost && Validation.IsValid()) {
+        scriptureReference = Request.Form["scriptureReference"];
+        notes = Request.Form["notes"];
+
+        var db = Database.Open("ScriptureJournal");
+        var insertScriptureReferenceSQL = "INSERT INTO ScriptureJournalEntries (scriptureReference, notes) Values(@0, @1)";
+        db.Execute(insertScriptureReferenceSQL, scriptureReference, notes);
+        Response.Redirect("~/ScriptureJournal");
+        
+    }
+    //StreamReader r = new StreamReader(Server.MapPath("scriptureLayout.json"));
+    //String scriptureLayoutJSON = r.ReadToEnd();
+    //dynamic json = System.Web.Helpers.Json.Decode(scriptureLayoutJSON);
+}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Scripture Journal</title>
+        <script src="https://code.jquery.com/jquery-3.1.1.js"
+                integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA="
+                crossorigin="anonymous">
+        </script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"
+                integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30="
+                crossorigin="anonymous">
+        </script>
+        <script type="text/javascript" src="~/scriptureLayout.js"></script>
+        <link rel="stylesheet" type="text/css" href="~/scriptureJournal.css" /> 
+    </head>
+    <body>
+        <header>
+            <h1>Scripture Journal</h1>
+            <nav>
+                <a href="~/ScriptureJournal">Home</a>
+                <a href="~/AddJournalEntry">New Journal Entry</a>
+            </nav>
+        </header>
+        <main>
+            <section>
+                <h2>New Journal Entry</h2>
+                @Html.ValidationSummary()
+                <div class="scriptureReference">
+                    <div style="display:none;">
+                        <label>Scripture Set</label>
+                        <select id="scriptures">
+                            <option> </option>
+                            <option value="The Old Testament">Bible: Old Testament</option>
+                            <option value="The New Testament">Bible: New Testament</option>
+                            <option value="The Book of Mormon">Book of Mormon</option>
+                            <option value="The Doctrine and Covenants">Doctrine and Covenants</option>
+                            <option value="The Pearl of Great Price">Pearl of Great Price</option>
+                        </select>
+                    </div>
+                    <div style="display:none;">
+                        <label>Book</label>
+                        <select id="books">
+                            <option> </option>
+                        </select>
+                    </div>
+                    <div style="display:none;">
+                        <label>Chapter</label>
+                        <select id="chapters">
+                            <option> </option>
+                        </select>
+                    </div>
+                    <div style="display:none;">
+                        <label>Verse(s)</label>
+                        <select id="verses" multiple>
+                            <option> </option>
+                        </select>
+                    </div>
+                </div>
+                <form method="post">
+                    <div>
+                        <label>Scripture Reference</label>
+                        <input type="text" name="scriptureReference" id="scriptureReference"/>
+                    </div>
+                    <div>
+                        <label>Notes</label>
+                        <textarea name="notes"></textarea>
+                    </div>
+                    <input type="submit" name="buttonSubmit" value="Add Scripture Journal Entry"/>
+                </form>
+            </section>
+        </main>
+        <footer></footer>
+    </body>
+</html>

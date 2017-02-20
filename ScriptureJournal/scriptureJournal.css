@@ -1,0 +1,61 @@
+﻿
+.grid {
+    margin: 4px;
+    border-collapse: collapse;
+    width: 1000px;
+}
+.grid th, .grid td {
+    border: 1px solid #c0c0c0;
+    padding: 5px;
+}
+.head {
+    background-color: #e8e8e8;
+    font-weight: bold;
+    color: #000;
+}
+.alt {
+    background-color: #e8e8e8;
+    color: #000;
+}
+nav {
+    display: flex;
+    width: 250px;
+}
+nav a {
+    padding: 10px;
+    margin: 10px 10px 10px 0px;
+    flex-grow: 2;
+    background-color: #7abbff;
+    text-align: center;
+    cursor: pointer;
+    text-decoration: none;
+    border-radius: 5px;
+}
+.search {
+    margin-top: 5px;
+}
+label {
+    display:inline-block;
+    width: 160px;
+    vertical-align: middle;
+}
+#scriptureReference {
+    display: inline-block;
+    vertical-align: middle;
+    height: 24px;
+    border: thin solid #ccc;
+    border-radius: 4px;
+    width: 300px;
+}
+.search input {
+    display: inline-block;
+    vertical-align: middle;
+    height: 24px;
+    border: thin solid #ccc;
+    border-radius: 4px;
+}
+textarea {
+    width: 600px;
+    height: 400px;
+    vertical-align: top;
+}

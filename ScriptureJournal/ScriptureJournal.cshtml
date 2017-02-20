@@ -1,0 +1,91 @@
+﻿@{ 
+    var db = Database.Open("ScriptureJournal");
+
+    var scriptureJournalEntrySQL = "SELECT * FROM ScriptureJournalEntries";
+    var searchBook = "";
+    var searchNotes = "";
+    var scriptureJournalEntries = db.Query(scriptureJournalEntrySQL, searchBook, searchNotes);
+
+    if (!Request.QueryString["searchBook"].IsEmpty() && Request.QueryString["searchNotes"].IsEmpty()) {
+        scriptureJournalEntrySQL = "SELECT * FROM ScriptureJournalEntries WHERE scriptureReference LIKE @0";
+        searchBook = "%" + Request.QueryString["searchBook"] + "%";
+        scriptureJournalEntries = db.Query(scriptureJournalEntrySQL, searchBook);
+    }
+
+    if (Request.QueryString["searchBook"].IsEmpty() && !Request.QueryString["searchNotes"].IsEmpty()) {
+        scriptureJournalEntrySQL = "SELECT * FROM ScriptureJournalEntries WHERE notes LIKE @0";
+        searchNotes = "%" + Request.QueryString["searchNotes"] + "%";
+        scriptureJournalEntries = db.Query(scriptureJournalEntrySQL, searchNotes);
+    }
+
+    if (!Request.QueryString["searchBook"].IsEmpty() && !Request.QueryString["searchNotes"].IsEmpty()) {
+        scriptureJournalEntrySQL = "SELECT * FROM ScriptureJournalEntries WHERE scriptureReference LIKE @0 AND notes LIKE @1";
+        searchBook = "%" + Request.QueryString["searchBook"] + "%";
+        searchNotes = "%" + Request.QueryString["searchNotes"] + "%";
+        scriptureJournalEntries = db.Query(scriptureJournalEntrySQL, searchBook, searchNotes);
+    }
+
+    var grid = new WebGrid(source: scriptureJournalEntries, defaultSort: "DateAdded", rowsPerPage: 5);
+}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Scripture Journal</title>
+        <script src="https://code.jquery.com/jquery-3.1.1.js"
+                integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA="
+                crossorigin="anonymous">
+        </script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"
+                integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30="
+                crossorigin="anonymous">
+        </script>
+        <link rel="stylesheet" type="text/css" href="~/scriptureJournal.css" /> 
+    </head>
+    <body>
+        <header>
+            <h1>Scripture Journal</h1>
+            <nav>
+                <a href="~/ScriptureJournal">Home</a>
+                <a href="~/AddJournalEntry">New Journal Entry</a>
+            </nav>
+        </header>
+        <main>
+            <section>
+                <form method="get">
+                    <div class="search">
+                        <label for="searchBook">Scripture/Book Search</label>
+                        <input type="text" name="searchBook" value="@Request.QueryString["searchBook"]" />
+                    </div>
+                    <div class="search">
+                        <label for="searchNotes">Notes Search</label>
+                        <input type="text" name="searchNotes" value="@Request.QueryString["searchNotes"]" />
+                    </div>
+                    <input type="submit" value="Search" />
+                </form>
+            </section>
+            <section>
+                <h1>Scripture Journal Entries</h1>
+                <div>
+                    @grid.GetHtml(
+                    tableStyle: "grid",
+                    headerStyle: "head",
+                    alternatingRowStyle: "alt",
+                    columns: grid.Columns(
+                        grid.Column(format: @<a href="~/EditJournalEntry?ID=@item.ID">Edit</a>),
+                        grid.Column("scriptureReference", "Scripture"),
+                        grid.Column(columnName: "notes", header: "Notes", canSort: false),
+                        grid.Column("dateAdded", "Date Added"),
+                        grid.Column(format: @<a href="~/DeleteJournalEntry?ID=@item.ID">Delete</a>)
+                    )
+                )
+                </div>
+                <p>
+                    <a href="~/AddJournalEntry">Add Scripture Journal Entry</a>
+                </p>
+            </section>
+        </main>
+        <footer></footer>
+    </body>
+</html>
